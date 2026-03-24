@@ -10,6 +10,10 @@ import androidx.work.Configuration
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.google.firebase.FirebaseApp
+import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
+import com.google.firebase.appcheck.ktx.appCheck
+import com.google.firebase.ktx.Firebase
 import com.yourday.app.worker.SyncWorker
 import dagger.hilt.android.HiltAndroidApp
 import java.util.concurrent.TimeUnit
@@ -28,6 +32,13 @@ class YourDayApp : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
+        
+        // Initialize Firebase and App Check
+        FirebaseApp.initializeApp(this)
+        Firebase.appCheck.installAppCheckProviderFactory(
+            DebugAppCheckProviderFactory.getInstance()
+        )
+
         createNotificationChannels()
         schedulePeriodicSync()
     }
