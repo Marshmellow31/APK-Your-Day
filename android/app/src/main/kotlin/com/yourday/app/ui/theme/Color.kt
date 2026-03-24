@@ -2,64 +2,90 @@ package com.yourday.app.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// ── Background Layers ─────────────────────────────────────────────────────────
-val Background = Color(0xFF0A0A0F)
-val Surface = Color(0xFF12121A)
-val SurfaceVariant = Color(0xFF1A1A25)
-val SurfaceContainer = Color(0xFF1E1E2E)
-val SurfaceContainerHigh = Color(0xFF252535)
+// ── Theme Palette ────────────────────────────────────────────────────────────
+val Background = Color(0xFF0A0A0A)
+val Surface = Color(0xFF111111)
+val CardBackground = Color(0xFF151515)
+val BorderColor = Color(1f, 1f, 1f, 0.06f)
 
-// ── Primary (Violet) ──────────────────────────────────────────────────────────
-val Primary = Color(0xFF7C6FFF)
-val PrimaryLight = Color(0xFF9D93FF)
-val PrimaryDark = Color(0xFF5A4FCC)
-val OnPrimary = Color(0xFFFFFFFF)
-val PrimaryContainer = Color(0xFF2A2550)
-val OnPrimaryContainer = Color(0xFFCCC8FF)
+val Accent = Color(0xFF6C63FF)
+val AccentDark = Color(0xFF4A43D6)
+val AccentLight = Color(0xFF9E9AFF)
 
-// ── Secondary (Pink) ──────────────────────────────────────────────────────────
-val Secondary = Color(0xFFFF6B9D)
-val SecondaryLight = Color(0xFFFF8FB5)
-val OnSecondary = Color(0xFFFFFFFF)
-val SecondaryContainer = Color(0xFF4D2035)
-val OnSecondaryContainer = Color(0xFFFFB3CC)
+// ── Text Colors ──────────────────────────────────────────────────────────────
+val TextPrimary = Color(0xFFEAEAEA)
+val TextSecondary = Color(0xFF9A9A9A)
+val TextSubtitle = Color(0xFF777777)
 
-// ── Tertiary (Teal) ───────────────────────────────────────────────────────────
-val Tertiary = Color(0xFF00D4AA)
-val OnTertiary = Color(0xFF003329)
-val TertiaryContainer = Color(0xFF00503F)
-val OnTertiaryContainer = Color(0xFF9EFCE2)
+// ── Material 3 Mapping ───────────────────────────────────────────────────────
+val Primary = Accent
+val OnPrimary = Color.White
+val PrimaryContainer = Accent.copy(alpha = 0.1f)
+val OnPrimaryContainer = Accent
+val PrimaryLight = AccentLight
+val PrimaryDark = AccentDark
 
-// ── Semantic Colors ───────────────────────────────────────────────────────────
-val Success = Color(0xFF4CAF82)
-val Warning = Color(0xFFFFB347)
-val Error = Color(0xFFFF6B6B)
-val OnError = Color(0xFFFFFFFF)
-val ErrorContainer = Color(0xFF4D1515)
-val OnErrorContainer = Color(0xFFFFB3B3)
+val Secondary = TextSecondary
+val OnSecondary = Background
+val SecondaryContainer = Color(0xFF333333)
+val OnSecondaryContainer = Color.White
 
-// ── Text Colors ───────────────────────────────────────────────────────────────
-val OnBackground = Color(0xFFE8E8F0)
-val OnSurface = Color(0xFFE0E0ED)
-val OnSurfaceVariant = Color(0xFFAAA8C0)
-val Outline = Color(0xFF3A3A50)
-val OutlineVariant = Color(0xFF252535)
+val Tertiary = Color(0xFF00C4B4)
+val OnTertiary = Color.White
+val TertiaryContainer = Color(0xFF004D46)
+val OnTertiaryContainer = Color(0xFFB2EEE9)
 
-// ── Priority Colors ───────────────────────────────────────────────────────────
-val PriorityHigh = Color(0xFFFF6B6B)
-val PriorityMedium = Color(0xFFFFB347)
-val PriorityLow = Color(0xFF4CAF82)
+val ErrorColor = Color(0xFFFF5252)
+val OnError = Color.White
+val ErrorContainer = Color(0xFFB00020)
+val OnErrorContainer = Color(0xFFFFDAD6)
 
-// ── Subject Colors (palette for user-selectable subject accent colors) ─────────
+val Success = Color(0xFF4CAF50)
+
+val BackgroundColor = Background
+val OnBackground = TextPrimary
+
+val SurfaceColor = Surface
+val OnSurface = TextPrimary
+val SurfaceVariant = CardBackground
+val OnSurfaceVariant = TextSecondary
+val SurfaceContainer = Color(0xFF1A1A1A)
+val SurfaceContainerHigh = Color(0xFF242424)
+
+val Outline = BorderColor
+val OutlineVariant = Color(1f, 1f, 1f, 0.05f)
+
+// ── Priority Styles ─────────────────────────────────────────────────────────
+val PriorityHigh = Color(0xFFFF5252)
+val PriorityMedium = Color(0xFFFFC107)
+val PriorityLow = Color(0xFF4CAF50)
+
+val PriorityHighBorder = PriorityHigh.copy(alpha = 0.4f)
+val PriorityHighBackground = PriorityHigh.copy(alpha = 0.05f)
+val PriorityMediumBorder = PriorityMedium.copy(alpha = 0.3f)
+val PriorityLowBorder = PriorityLow.copy(alpha = 0.3f)
+
+// ── Subject Colors ──────────────────────────────────────────────────────────
 val subjectColors = listOf(
-    Color(0xFF7C6FFF), // violet
-    Color(0xFFFF6B9D), // pink
-    Color(0xFF00D4AA), // teal
-    Color(0xFFFF9F43), // orange
-    Color(0xFF54A0FF), // blue
-    Color(0xFF5F27CD), // deep purple
-    Color(0xFF00D2D3), // cyan
-    Color(0xFF1DD1A1), // green
-    Color(0xFFFF6348), // red-orange
-    Color(0xFFFECA57), // yellow
+    Color(0xFFFF5252), // Red
+    Color(0xFFFF4081), // Pink
+    Color(0xFFE040FB), // Purple
+    Color(0xFF7C4DFF), // Deep Purple
+    Color(0xFF536DFE), // Indigo
+    Color(0xFF448AFF), // Blue
+    Color(0xFF40C4FF), // Light Blue
+    Color(0xFF18FFFF), // Cyan
+    Color(0xFF64FFDA), // Teal
+    Color(0xFF69F0AE), // Green
+    Color(0xFFB2FF59), // Light Green
+    Color(0xFFEEFF41), // Lime
+    Color(0xFFFFFF00), // Yellow
+    Color(0xFFFFD740), // Amber
+    Color(0xFFFFAB40), // Orange
+    Color(0xFFFF6E40)  // Deep Orange
 )
+
+// ── Gradients ────────────────────────────────────────────────────────────────
+val MainBgGradient = listOf(Color(0xFF0A0A0A), Color(0xFF050505))
+val FABGradient = listOf(Accent, AccentDark)
+val UsernameGradient = listOf(Color.White, Color(0xFFB0B0B0))

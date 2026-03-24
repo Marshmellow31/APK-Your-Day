@@ -1,5 +1,6 @@
 package com.yourday.app.ui.screens.main
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,6 +11,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -41,30 +44,87 @@ fun TasksScreen(
     Scaffold(
         containerColor = Background,
         topBar = {
-            TopAppBar(title = { Text("Tasks", fontWeight = FontWeight.SemiBold) },
-                navigationIcon = { IconButton(onClick = onNavigateBack) { Icon(Icons.Default.ArrowBack, null) } },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Background, titleContentColor = OnBackground))
+            TopAppBar(
+                title = { Text("Tasks", style = MaterialTheme.typography.headlineSmall) },
+                navigationIcon = { 
+                    IconButton(onClick = onNavigateBack) { 
+                        Icon(Icons.Default.ArrowBack, null, tint = TextPrimary) 
+                    } 
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Background,
+                    titleContentColor = TextPrimary
+                )
+            )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onCreateTask, containerColor = Primary) { Icon(Icons.Default.Add, null, tint = OnPrimary) }
+            FloatingActionButton(
+                onClick = onCreateTask,
+                containerColor = Color.Transparent,
+                elevation = FloatingActionButtonDefaults.elevation(0.dp),
+                modifier = Modifier
+                    .size(56.dp)
+                    .background(Brush.linearGradient(FABGradient), MaterialTheme.shapes.medium)
+            ) {
+                Icon(Icons.Default.Add, null, tint = Color.White)
+            }
         }
     ) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding)) {
+        Column(
+            Modifier
+                .fillMaxSize()
+                .background(Brush.verticalGradient(MainBgGradient))
+                .padding(padding)
+        ) {
             // Filter chips
-            Row(Modifier.padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(
+                Modifier.padding(horizontal = 20.dp, vertical = 8.dp), 
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
                 TaskFilter.values().forEach { filter ->
-                    FilterChip(selected = uiState.filter == filter, onClick = { viewModel.setFilter(filter) },
-                        label = { Text(filter.name.lowercase().replaceFirstChar { it.uppercase() }) },
-                        colors = FilterChipDefaults.filterChipColors(selectedContainerColor = PrimaryContainer, selectedLabelColor = OnPrimaryContainer))
+                    val isSelected = uiState.filter == filter
+                    FilterChip(
+                        selected = isSelected,
+                        onClick = { viewModel.setFilter(filter) },
+                        label = { 
+                            Text(
+                                filter.name.lowercase().replaceFirstChar { it.uppercase() },
+                                style = MaterialTheme.typography.labelSmall
+                            ) 
+                        },
+                        shape = MaterialTheme.shapes.medium,
+                        border = if (isSelected) null else FilterChipDefaults.filterChipBorder(
+                            enabled = true,
+                            selected = false,
+                            borderColor = Outline
+                        ),
+                        colors = FilterChipDefaults.filterChipColors(
+                            containerColor = Color.Transparent,
+                            labelColor = TextSecondary,
+                            selectedContainerColor = Accent.copy(alpha = 0.15f),
+                            selectedLabelColor = Accent
+                        )
+                    )
                 }
             }
-            Spacer(Modifier.height(8.dp))
+            
+            Spacer(Modifier.height(16.dp))
+            
             when {
                 uiState.isLoading -> LoadingScreen()
-                uiState.tasks.isEmpty() -> EmptyState("No tasks", "Create your first task with the + button", "📋")
-                else -> LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                uiState.tasks.isEmpty() -> EmptyState("No tasks", "Your task list is empty", "📋")
+                else -> LazyColumn(
+                    Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
                     items(uiState.tasks, key = { it.id }) { task ->
-                        SwipeableTaskCard(task = task, onComplete = { viewModel.completeTask(task.id) }, onEdit = { onEditTask(task.id) }, onDelete = { viewModel.deleteTask(task.id) })
+                        SwipeableTaskCard(
+                            task = task, 
+                            onComplete = { viewModel.completeTask(task.id) }, 
+                            onEdit = { onEditTask(task.id) }, 
+                            onDelete = { viewModel.deleteTask(task.id) }
+                        )
                     }
                 }
             }
@@ -89,29 +149,64 @@ private fun SwipeableTaskCard(
             }
         }
     )
+    
+    val border = when (task.priority) {
+        "high" -> BorderStroke(1.dp, PriorityHighBorder)
+        "medium" -> BorderStroke(1.dp, PriorityMediumBorder)
+        "low" -> BorderStroke(1.dp, PriorityLowBorder)
+        else -> BorderStroke(1.dp, Outline)
+    }
+    val bg = if (task.priority == "high") PriorityHighBackground else CardBackground
+
     SwipeToDismissBox(
         state = dismissState,
         backgroundContent = {
-            val color = if (dismissState.dismissDirection == SwipeToDismissBoxValue.StartToEnd) Success else Error
-            Box(Modifier.fillMaxSize().background(color, MaterialTheme.shapes.medium).padding(horizontal = 20.dp)) {
-                Icon(if (dismissState.dismissDirection == SwipeToDismissBoxValue.StartToEnd) Icons.Default.Check else Icons.Default.Delete, null,
-                    tint = OnPrimary, modifier = Modifier.align(if (dismissState.dismissDirection == SwipeToDismissBoxValue.StartToEnd) Alignment.CenterStart else Alignment.CenterEnd))
+            val color = if (dismissState.dismissDirection == SwipeToDismissBoxValue.StartToEnd) Accent else Color(0xFFFF5050)
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .background(color.copy(alpha = 0.2f), MaterialTheme.shapes.large)
+                    .padding(horizontal = 20.dp)
+            ) {
+                Icon(
+                    imageVector = if (dismissState.dismissDirection == SwipeToDismissBoxValue.StartToEnd) Icons.Default.Check else Icons.Default.Delete,
+                    contentDescription = null,
+                    tint = color,
+                    modifier = Modifier.align(
+                        if (dismissState.dismissDirection == SwipeToDismissBoxValue.StartToEnd) Alignment.CenterStart else Alignment.CenterEnd
+                    )
+                )
             }
         },
         content = {
-            AppCard(modifier = Modifier.fillMaxWidth(), onClick = onEdit) {
+            AppCard(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onEdit,
+                border = border,
+                containerColor = bg
+            ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    val priorityColor = when (task.priority) { "high" -> PriorityHigh; "low" -> PriorityLow; else -> PriorityMedium }
-                    Box(Modifier.size(4.dp, 44.dp).background(priorityColor, MaterialTheme.shapes.extraSmall))
-                    Spacer(Modifier.width(12.dp))
                     Column(Modifier.weight(1f)) {
-                        Text(task.title, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium, color = if (task.isCompleted) OnSurfaceVariant else OnSurface)
+                        Text(
+                            task.title, 
+                            style = MaterialTheme.typography.bodyMedium, 
+                            fontWeight = FontWeight.Medium, 
+                            color = if (task.isCompleted) TextSecondary else TextPrimary,
+                            textDecoration = if (task.isCompleted) androidx.compose.ui.text.style.TextDecoration.LineThrough else null
+                        )
                         if (task.dueDate != null) {
-                            Text(SimpleDateFormat("MMM d, h:mm a", Locale.getDefault()).format(Date(task.dueDate)), style = MaterialTheme.typography.bodySmall, color = if (task.isOverdue) Error else OnSurfaceVariant)
+                            Text(
+                                SimpleDateFormat("MMM d, h:mm a", Locale.getDefault()).format(Date(task.dueDate)),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = if (task.isOverdue) Color(0xFFFF5050) else TextSubtitle
+                            )
                         }
                     }
-                    if (task.isCompleted) Icon(Icons.Default.CheckCircle, null, tint = Success)
-                    else Icon(Icons.Default.RadioButtonUnchecked, null, tint = OnSurfaceVariant, modifier = Modifier.size(20.dp))
+                    if (task.isCompleted) {
+                        Icon(Icons.Default.CheckCircle, null, tint = Accent)
+                    } else {
+                        Icon(Icons.Default.RadioButtonUnchecked, null, tint = Outline, modifier = Modifier.size(20.dp))
+                    }
                 }
             }
         }

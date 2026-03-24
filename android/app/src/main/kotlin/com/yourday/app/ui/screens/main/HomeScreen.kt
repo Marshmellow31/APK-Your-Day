@@ -1,6 +1,5 @@
 package com.yourday.app.ui.screens.main
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,8 +53,15 @@ fun HomeScreen(
     Scaffold(
         containerColor = Background,
         floatingActionButton = {
-            FloatingActionButton(onClick = onCreateTask, containerColor = Primary) {
-                Icon(Icons.Default.Add, "Add Task", tint = OnPrimary)
+            FloatingActionButton(
+                onClick = onCreateTask,
+                containerColor = Color.Transparent,
+                elevation = FloatingActionButtonDefaults.elevation(0.dp),
+                modifier = Modifier
+                    .size(56.dp)
+                    .background(Brush.linearGradient(FABGradient), MaterialTheme.shapes.medium)
+            ) {
+                Icon(Icons.Default.Add, "Add Task", tint = Color.White)
             }
         }
     ) { padding ->
@@ -63,75 +70,116 @@ fun HomeScreen(
             uiState.error != null -> ErrorState(uiState.error ?: "") { viewModel.loadData(userId, userName) }
             else -> {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize().padding(padding),
-                    contentPadding = PaddingValues(bottom = 80.dp)
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Brush.verticalGradient(MainBgGradient))
+                        .padding(padding),
+                    contentPadding = PaddingValues(bottom = 100.dp)
                 ) {
-                    // Header
+                    // Header Section
                     item {
-                        Box(
-                            Modifier.fillMaxWidth().background(
-                                Brush.verticalGradient(listOf(SurfaceContainer, Background))
-                            ).padding(horizontal = 20.dp, vertical = 24.dp)
+                        Column(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 20.dp, vertical = 32.dp)
                         ) {
-                            Column {
-                                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                                    Column {
-                                        Text("${uiState.greeting},", style = MaterialTheme.typography.bodyLarge, color = OnSurfaceVariant)
-                                        Text(
-                                            text = userName.ifEmpty { "Student" },
-                                            style = MaterialTheme.typography.headlineMedium.copy(
-                                                fontWeight = FontWeight.Bold,
-                                                brush = Brush.linearGradient(listOf(Primary, Secondary))
-                                            )
+                            Row(
+                                Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column {
+                                    Text(
+                                        text = uiState.greeting,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = TextSecondary
+                                    )
+                                    Text(
+                                        text = userName.ifEmpty { "Student" },
+                                        style = MaterialTheme.typography.headlineLarge.copy(
+                                            brush = Brush.linearGradient(UsernameGradient)
                                         )
-                                    }
-                                    Row {
-                                        IconButton(onClick = onNavigateToNotifications) { Icon(Icons.Default.Notifications, null, tint = OnSurfaceVariant) }
-                                        IconButton(onClick = onNavigateToProfile) { Icon(Icons.Default.AccountCircle, null, tint = OnSurfaceVariant) }
+                                    )
+                                }
+                                Row {
+                                    IconButton(onClick = onNavigateToNotifications) { 
+                                        Icon(Icons.Default.Notifications, null, tint = TextSecondary) 
                                     }
                                 }
-                                Spacer(Modifier.height(8.dp))
-                                Text(SimpleDateFormat("EEEE, MMMM d", Locale.getDefault()).format(Date()), style = MaterialTheme.typography.bodyMedium, color = OnSurfaceVariant)
                             }
+                            Spacer(Modifier.height(8.dp))
+                            Text(
+                                text = "Let’s make today productive.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextSubtitle
+                            )
                         }
                     }
 
-                    // Stats Row
+                    // Progress Section (Glassy Card)
                     item {
-                        Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            StatCard("📋", "${uiState.pendingCount}", "Pending", Modifier.weight(1f))
-                            StatCard("✅", "${uiState.completedTodayCount}", "Done Today", Modifier.weight(1f))
-                            StatCard("📚", "${uiState.subjects.size}", "Subjects", Modifier.weight(1f), onClick = onNavigateToSubjects)
+                        val total = (uiState.pendingCount + uiState.completedTodayCount).toFloat()
+                        val progress = if (total > 0) uiState.completedTodayCount / total else 0f
+                        
+                        ProgressCard(
+                            progress = progress,
+                            title = "Daily Progress",
+                            subtitle = "${uiState.completedTodayCount} of ${total.toInt()} tasks completed",
+                            modifier = Modifier.padding(horizontal = 20.dp)
+                        )
+                        Spacer(Modifier.height(24.dp))
+                    }
+
+                    // Stats Grid
+                    item {
+                        Text(
+                            "Overview", 
+                            style = MaterialTheme.typography.headlineSmall, 
+                            modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)
+                        )
+                        Row(
+                            Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            StatCard("${uiState.pendingCount}", "Pending", Modifier.weight(1f))
+                            StatCard("${uiState.completedTodayCount}", "Completed", Modifier.weight(1f))
                         }
+                        Spacer(Modifier.height(24.dp))
                     }
 
                     // Quick Actions
                     item {
-                        Text("Quick Access", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp))
+                        Text(
+                            "Quick Access", 
+                            style = MaterialTheme.typography.headlineSmall, 
+                            modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)
+                        )
                         LazyRow(
                             contentPadding = PaddingValues(horizontal = 20.dp),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             items(listOf(
-                                Triple("📊", "Analytics", onNavigateToAnalytics),
-                                Triple("🗓️", "Scheduler", onNavigateToScheduler),
-                                Triple("🎯", "Goals", onNavigateToGoals),
-                                Triple("⚙️", "Settings", onNavigateToSettings)
-                            )) { (emoji, label, action) ->
-                                QuickActionChip(emoji, label, onClick = action)
+                                Triple(Icons.Default.BarChart, "Analytics", onNavigateToAnalytics),
+                                Triple(Icons.Default.CalendarToday, "Schedule", onNavigateToScheduler),
+                                Triple(Icons.Default.TrackChanges, "Goals", onNavigateToGoals)
+                            )) { (icon, label, action) ->
+                                QuickActionCard(icon, label, onClick = action)
                             }
                         }
+                        Spacer(Modifier.height(24.dp))
                     }
 
                     // Today's Tasks
                     item {
                         Row(
-                            Modifier.fillMaxWidth().padding(horizontal = 20.dp).padding(top = 20.dp, bottom = 8.dp),
+                            Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text("Today's Tasks", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                            TextButton(onClick = onNavigateToTasks) { Text("See all", color = Primary) }
+                            Text("Today's Tasks", style = MaterialTheme.typography.headlineSmall)
+                            TextButton(onClick = onNavigateToTasks) { 
+                                Text("See all", color = Accent, style = MaterialTheme.typography.labelSmall) 
+                            }
                         }
                     }
 
@@ -139,7 +187,7 @@ fun HomeScreen(
                         item { EmptyState("No tasks yet", "Tap + to create your first task", "🚀") }
                     } else {
                         items(uiState.todayTasks) { task ->
-                            TaskListItem(task = task, modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp))
+                            TaskListItem(task = task, modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp))
                         }
                     }
                 }
@@ -149,51 +197,66 @@ fun HomeScreen(
 }
 
 @Composable
-private fun StatCard(emoji: String, value: String, label: String, modifier: Modifier = Modifier, onClick: (() -> Unit)? = null) {
-    AppCard(modifier = modifier, onClick = onClick) {
-        Text(emoji, fontSize = 20.sp)
-        Spacer(Modifier.height(4.dp))
-        Text(value, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = Primary)
-        Text(label, style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
+private fun StatCard(value: String, label: String, modifier: Modifier = Modifier) {
+    AppCard(modifier = modifier) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+            Text(value, style = MaterialTheme.typography.headlineLarge, color = Accent)
+            Text(label, style = MaterialTheme.typography.labelSmall, color = TextSecondary)
+        }
     }
 }
 
 @Composable
-private fun QuickActionChip(emoji: String, label: String, onClick: () -> Unit) {
-    Surface(
+private fun QuickActionCard(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, onClick: () -> Unit) {
+    AppCard(
+        modifier = Modifier.width(110.dp),
         onClick = onClick,
-        shape = MaterialTheme.shapes.large,
-        color = SurfaceContainerHigh,
-        modifier = Modifier.height(72.dp).width(88.dp)
+        containerColor = SurfaceColor
     ) {
-        Column(Modifier.padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-            Text(emoji, fontSize = 22.sp)
-            Spacer(Modifier.height(4.dp))
-            Text(label, style = MaterialTheme.typography.labelSmall, color = OnSurfaceVariant)
+        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+            Icon(icon, null, tint = Accent, modifier = Modifier.size(24.dp))
+            Spacer(Modifier.height(8.dp))
+            Text(label, style = MaterialTheme.typography.labelSmall, color = TextSecondary)
         }
     }
 }
 
 @Composable
 private fun TaskListItem(task: com.yourday.app.data.model.Task, modifier: Modifier = Modifier) {
-    val priorityColor = when (task.priority) {
-        "high" -> PriorityHigh
-        "low" -> PriorityLow
-        else -> PriorityMedium
+    val border = when (task.priority) {
+        "high" -> androidx.compose.foundation.BorderStroke(1.dp, PriorityHighBorder)
+        "medium" -> androidx.compose.foundation.BorderStroke(1.dp, PriorityMediumBorder)
+        "low" -> androidx.compose.foundation.BorderStroke(1.dp, PriorityLowBorder)
+        else -> androidx.compose.foundation.BorderStroke(1.dp, Outline)
     }
-    AppCard(modifier = modifier.fillMaxWidth()) {
+    
+    val bg = if (task.priority == "high") PriorityHighBackground else CardBackground
+
+    AppCard(
+        modifier = modifier.fillMaxWidth(),
+        border = border,
+        containerColor = bg
+    ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.size(4.dp, 40.dp).background(priorityColor, MaterialTheme.shapes.extraSmall))
-            Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
-                Text(task.title, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium,
-                    color = if (task.isCompleted) OnSurfaceVariant else OnSurface,
-                    textDecoration = if (task.isCompleted) androidx.compose.ui.text.style.TextDecoration.LineThrough else null)
+                Text(
+                    task.title, 
+                    style = MaterialTheme.typography.bodyMedium, 
+                    fontWeight = FontWeight.Medium,
+                    color = if (task.isCompleted) TextSecondary else TextPrimary,
+                    textDecoration = if (task.isCompleted) androidx.compose.ui.text.style.TextDecoration.LineThrough else null
+                )
                 if (task.description.isNotEmpty()) {
-                    Text(task.description, style = MaterialTheme.typography.bodySmall, color = OnSurfaceVariant, maxLines = 1)
+                    Text(task.description, style = MaterialTheme.typography.labelSmall, color = TextSecondary, maxLines = 1)
                 }
             }
-            if (task.isCompleted) Icon(Icons.Default.CheckCircle, null, tint = Success, modifier = Modifier.size(20.dp))
+            if (task.isCompleted) {
+                Icon(Icons.Default.CheckCircle, null, tint = Accent, modifier = Modifier.size(20.dp))
+            } else {
+                IconButton(onClick = {}, modifier = Modifier.size(24.dp)) {
+                    Icon(Icons.Default.MoreVert, null, tint = TextSecondary)
+                }
+            }
         }
     }
 }
