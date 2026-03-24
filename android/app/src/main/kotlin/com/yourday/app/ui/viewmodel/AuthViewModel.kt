@@ -70,6 +70,21 @@ class AuthViewModel @Inject constructor(
         }
     }
 
+    fun signInWithGoogle(idToken: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _errorMessage.value = null
+            val result = authRepository.signInWithGoogle(idToken)
+            result.onSuccess { user ->
+                _authState.value = AuthState.LoggedIn(user)
+            }.onFailure { error ->
+                _errorMessage.value = error.localizedMessage ?: "Google sign in failed"
+                _authState.value = AuthState.LoggedOut
+            }
+            _isLoading.value = false
+        }
+    }
+
     fun registerWithEmail(email: String, password: String, displayName: String) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -100,6 +115,10 @@ class AuthViewModel @Inject constructor(
             authRepository.signOut()
             _authState.value = AuthState.LoggedOut
         }
+    }
+
+    fun setError(message: String) {
+        _errorMessage.value = message
     }
 
     fun clearError() { _errorMessage.value = null }

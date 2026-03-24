@@ -1,5 +1,7 @@
 package com.yourday.app.ui.screens.auth
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -16,7 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -26,11 +28,14 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import com.yourday.app.ui.components.AppButton
 import com.yourday.app.ui.components.AppTextField
+import com.yourday.app.ui.components.ButtonVariant
 import com.yourday.app.ui.theme.Background
 import com.yourday.app.ui.theme.Primary
-import com.yourday.app.ui.theme.Secondary
 import com.yourday.app.ui.viewmodel.AuthViewModel
 
 @Composable
@@ -44,10 +49,37 @@ fun LoginScreen(
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
+    val context = LocalContext.current
 
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
     val authState by viewModel.authState.collectAsStateWithLifecycle()
+
+    // Google Sign In Configuration
+    val gso = remember {
+        GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken("224841353755-fg22jam79m743umabgbgvc00uujbe7ol.apps.googleusercontent.com")
+            .requestEmail()
+            .build()
+    }
+    val googleSignInClient = remember { GoogleSignIn.getClient(context, gso) }
+
+    val googleSignInLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        try {
+            val account = task.getResult(ApiException::class.java)
+            val idToken = account.idToken
+            if (idToken != null) {
+                viewModel.signInWithGoogle(idToken)
+            } else {
+                viewModel.setError("Google Sign In failed: No ID Token")
+            }
+        } catch (e: ApiException) {
+            viewModel.setError("Google Sign In failed: ${e.message}")
+        }
+    }
 
     LaunchedEffect(authState) {
         if (authState is com.yourday.app.ui.viewmodel.AuthState.LoggedIn) onLoginSuccess()
@@ -138,11 +170,40 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                HorizontalDivider(modifier = Modifier.weight(1f))
+                Text(
+                    text = " OR ",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                )
+                HorizontalDivider(modifier = Modifier.weight(1f))
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            AppButton(
+                text = "Continue with Google",
+                onClick = {
+                    googleSignInLauncher.launch(googleSignInClient.signInIntent)
+                },
+                variant = ButtonVariant.OUTLINED,
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isLoading
+            )
+
             Spacer(modifier = Modifier.height(24.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Don't have an account?", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 TextButton(onClick = onNavigateToRegister) { Text("Sign Up", color = Primary, fontWeight = FontWeight.SemiBold) }
             }
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
