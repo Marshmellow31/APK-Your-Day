@@ -1,10 +1,11 @@
-# 🎓 Your Day — The Ultimate Student Planner PWA
+# 🎓 Your Day — Android/APK Edition
+ 
+![Your Day Banner](https://img.shields.io/badge/Status-Live-success?style=for-the-badge) ![Version](https://img.shields.io/badge/Version-1.0.0-blue?style=for-the-badge) ![Android](https://img.shields.io/badge/Android-APK-green?style=for-the-badge) ![PWA](https://img.shields.io/badge/PWA-Ready-purple?style=for-the-badge)
+ 
+✨ **Repository:** [https://github.com/Marshmellow31/APK-Your-Day](https://github.com/Marshmellow31/APK-Your-Day)
+ 
+Your Day is a premium, beautifully designed **Progressive Web App (PWA)** and **Android/APK** version built exclusively for students. It acts as a comprehensive academic dashboard to track your degree progress, manage subjects and tasks, reflect in a daily diary, and receive actual push notifications for upcoming deadlines—all running natively on your phone or browser.
 
-![Your Day Banner](https://img.shields.io/badge/Status-Live-success?style=for-the-badge) ![Version](https://img.shields.io/badge/Version-1.0.0-blue?style=for-the-badge) ![PWA](https://img.shields.io/badge/PWA-Ready-purple?style=for-the-badge)
-
-✨ **Live App:** [https://planner-app-for-iphone-9gz7.vercel.app/](https://planner-app-for-iphone-9gz7.vercel.app/)
-
-Your Day is a premium, beautifully designed **Progressive Web App (PWA)** built exclusively for students. It acts as a comprehensive academic dashboard to track your degree progress, manage subjects and tasks, reflect in a daily diary, and receive actual push notifications for upcoming deadlines—all running natively on your phone or browser.
 
 ---
 
