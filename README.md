@@ -16,107 +16,99 @@ Your Day is a premium, beautifully designed **Android/APK** version built exclus
 
 ## 🌟 Core Features
 
-### 🏰 1. Smart Dashboard & Premium UI
-- **Dynamic Header:** High-end SaaS aesthetic with time-based greetings, gradient shimmer animations on your name, and a sophisticated ambient glow.
-- **BTech Journey Tracker:** Watch your degree progress bar tick up in real-time.
-- **Quick Add & Overview:** Instantly add tasks or view a beautifully rendered Chart.js graph of your weekly productivity.
-- **Streak & Milestones:** Gamify your studying by maintaining daily streaks.
+### 🏰 1. Smart Dashboard & Premium UI `[NATIVE]`
+- **Dynamic Header:** High-end SaaS aesthetic with time-based greetings, gradient shimmer animations, and sophisticated ambient glow.
+- **BTech Journey Tracker:** degree progress bar integrated into the home screen.
+- **Quick Add & Overview:** Instantly add tasks or view productivity summary stats.
+- **Streak & Milestones:** `[UNDER CONSTRUCTION]` Habit tracking and study streaks logic is being ported from PWA.
 
-### 📚 2. Subject & Topic Management
-- **Hierarchical Structure:** Group your studies logically: `Subjects ➔ Topics ➔ Tasks`.
-- **Premium SaaS Design:** Beautiful, minimalist subject cards with subtle depth, custom gradient color coding, and clean typography to reduce visual noise.
+### 📚 2. Subject & Topic Management `[PARTIAL]`
+- **Subjects:** `[NATIVE]` Full integration with Firestore and Room for offline subject cards.
+- **Topics:** `[UNDER CONSTRUCTION]` Topic management is currently a placeholder; logic for grouping tasks by topic is in development.
+- **Premium SaaS Design:** Beautiful, minimalist subject cards with custom gradient color coding.
 
-### 🧠 3. Smart Scheduler & Task Manager
-- **Auto-Scheduling Algorithm:** Automatically drops tasks into your available "Study" time blocks based on deadline, estimated completion time, and priority using a custom greedy algorithm.
-- Set **Priority Levels** (High, Medium, Low) and specific **Reminder Times**.
-- Elegant swipe-to-complete animations and UI micro-interactions.
+### 🧠 3. Smart Scheduler & Task Manager `[PARTIAL]`
+- **Task Management:** `[NATIVE]` Full CRUD operations with local-first sync (`TaskRepository`).
+- **Auto-Scheduling Algorithm:** `[UNDER CONSTRUCTION]` The greedy scheduling algorithm is currently a placeholder. Tasks are not yet auto-allocated to study blocks.
+- **Micro-interactions:** Elegant swipe-to-complete animations and UI micro-interactions.
 
-### 🎯 4. Personal Development
-- **Goal Tracking:** Establish long-term objectives and track your progress natively.
-- **Daily Action Plans:** Automatically dissect goals into daily tasks, seamlessly feeding them into your Smart Scheduler.
+### 🎯 4. Personal Development `[NATIVE]`
+- **Goal Tracking:** Establish long-term objectives and track progress natively with completion percentages.
+- **Daily Action Plans:** `[UNDER CONSTRUCTION]` Automatic goal-to-task conversion logic is in progress.
 
-### 📅 5. Academic Calendar
-- **Semester Visualizer:** A stunning grid layout showing exactly how many weeks are left in your semester (setup managed cleanly in the Settings tab).
-- **Cultural Integration:** Automatically displays major Indian Festivals natively on your monthly grids.
+### 📅 5. Academic Calendar `[PWA ONLY]`
+- **Semester Visualizer:** Currently only available in the PWA version. Native Android screen and Indian Festival integration are missing.
 
-### 📔 6. Daily Diary & Expense Log
-- **Mood & Score Tracking:** Rate your day and track your emotional trend.
-- **Milestone Engine:** Tick off daily habits (e.g., *Drank 2L water*, *Hit the gym*).
-- **Expense Tracker:** Log daily spending directly inside your journal entry.
+### 📔 6. Daily Diary & Expense Log `[PWA ONLY]`
+- **Mood & Expense Tracking:** These features have not yet been ported to the native Android codebase.
 
-### 🔔 7. Native Push Notifications
-- Receive actual, native lock-screen notifications on your phone or desktop when a task is due.
+### 🔔 7. Native Push Notifications `[NATIVE]`
+- Receive actual, native lock-screen notifications via **Firebase Cloud Messaging (FCM)**.
 - *Bypasses paid Firebase plans entirely* by utilizing a completely free **Vercel Serverless API + Cron Job** architecture.
 
-### 📱 8. Installable PWA Experience
-- Install Your Day directly to your iPhone or Android Home Screen.
-- Operates totally fullscreen with optimized splash screens, custom manifest styling, and blazing fast performance.
+### 📱 8. Native Android & PWA Support
+- **Native APK:** Blazing fast experience built with Jetpack Compose.
+- **Installable PWA:** The legacy version remains fully functional for web/iOS users via Vite.
 ---
 
 ## ⚙️ How It Works (Architecture)
 
 Your Day is engineered to be blazing fast, serverless, and highly secure.
 
-#### **Frontend Flow (Vite + Vanilla JS)**
-The app uses a modular Vanilla JavaScript architecture to keep the bundle size tiny. **Vite** acts as the bundler, injecting the `vite-plugin-pwa` which automatically generates the Service Worker `sw.js` and Manifest file required for offline caching and installation.
+#### **Native Android Flow (Kotlin + Compose)**
+The Android app utilizes a **Clean Architecture** with a **Local-First** data pattern.
+1. **Local Storage (Room):** All data is cached locally for instant UI responsiveness and offline support.
+2. **Remote Sync (Firestore):** A `Repository` layer manages real-time synchronization between the local SQLite database and Cloud Firestore.
+3. **Dependency Injection (Hilt):** Ensures a modular and testable codebase.
 
-#### **Database & Security (Firebase Firestore)**
-All data (Tasks, Diary entries, Subjects) is stored in **Cloud Firestore**. 
-Advanced **Firestore Security Rules** ensure that every single database query is checked against the user's `Auth Token`. It is mathematically impossible for User A to read or modify User B's diary entries.
+#### **Legacy PWA Flow (Vite + Vanilla JS)**
+The original PWA uses modular Vanilla JavaScript and **Vite** for a tiny bundle size. Accessing the web version triggers the `sw.js` Service Worker for offline caching.
+
+#### **Database & Security (Firebase)**
+Both versions share a unified **Cloud Firestore** backend. Advanced **Security Rules** ensure that user data is isolated based on `Auth Token`, making it mathematically impossible for unauthorized access.
 
 #### **Push Notification Engine**
-To avoid costly server bills, the push notification engine is split into three parts:
-1. **Frontend:** Requests Notification permission and saves an FCM (Firebase Cloud Messaging) device token to Firestore via the `VAPID_KEY`.
-2. **Cron Scheduler:** A free external cron service pings the Vercel API every 15 minutes.
-3. **Vercel Serverless API (`/api/cron-reminders.js`):** Securely authenticates with the Firebase Admin SDK using Environment Variables, scans the database for overdue tasks, and explicitly sends the payload directly to the user's phone via Google's messaging servers.
+To avoid costly server bills, notifications are handled by:
+1. **App:** Saves an FCM device token to Firestore.
+2. **Cron Scheduler:** A free external cron service pings the Vercel API.
+3. **Vercel API:** Scans the database for overdue tasks and sends payloads via Google's FCM servers.
 
 ---
 
 ## 💻 Tech Stack
 
-| Layer | Technology Used |
-| :--- | :--- |
-| **Frontend Framework** | Vanilla JS (ES Modules), Vite ⚡ |
-| **Styling** | Vanilla CSS (Premium Dark Theme, Glassmorphism) 🎨 |
-| **Icons** | Lucide Icons 🪶 |
-| **Charts** | Chart.js v4 📈 |
-| **Authentication** | Firebase Auth (Email/Password & Google Sign-In) 🔐 |
-| **Database** | Cloud Firestore (NoSQL) 🗄️ |
-| **Backend API** | Vercel Serverless Functions (`Node.js`) ☁️ |
-| **Hosting & CI/CD** | Vercel 🚀 |
+| Layer | Native Android `[NEW]` | PWA (Legacy) |
+| :--- | :--- | :--- |
+| **Language** | Kotlin | Vanilla JS (ES Modules) |
+| **Framework** | Jetpack Compose | Vite ⚡ |
+| **Styling** | Compose Material3 | Vanilla CSS (Premium Dark) |
+| **DI / State** | Hilt & Flows | Simple State Stores |
+| **Local DB** | Room (SQLite) | IndexedDB (Cache) |
+| **Auth / Sync** | Firebase (Auth & Firestore) | Firebase (Auth & Firestore) |
+| **API / Cron** | Vercel Serverless (Node.js) | Vercel Serverless (Node.js) |
 
 ---
 
 ## 🚀 Quick Start Guide
 
-If you are cloning this repository to build your own version, follow these steps:
+### 📱 1. Android Native Setup
+1. **Prerequisites:** Install [Android Studio](https://developer.android.com/studio) (Ladybug or newer) and JDK 17+.
+2. **Clone & Open:** Open the `/android` folder in Android Studio.
+3. **Firebase:** 
+   - Add your `google-services.json` to `/android/app/`.
+   - Update `AuthDataSource.kt` if using custom Google Sign-In IDs.
+4. **Build:** Sync Gradle and run on a physical device or emulator.
 
-### 1. Prerequisites
-- Node.js installed (v18+)
-- A free Firebase Project
-- A free Vercel Account
+### 🌐 2. PWA / Web Setup
+1. **Prerequisites:** Node.js v18+.
+2. **Install:** `npm install` in the root directory.
+3. **Firebase:** Open `/public/firebase-config.js` and paste your web config.
+4. **Dev:** `npm run dev` to start the Vite server.
 
-### 2. Local Installation
-```bash
-# 1. Clone the repo & install dependencies
-npm install
-
-# 2. Add your Firebase keys
-# Open /public/firebase-config.js and paste your specific Firebase Web App configuration.
-
-# 3. Start the dev server
-npm run dev
-```
-
-### 3. Deployment
-```bash
-# Deploys directly to Vercel
-npm run deploy
-
-# Remember to set these two Environment Variables in your Vercel Dashboard for push notifications:
-# - FIREBASE_SERVICE_ACCOUNT (Your Firebase Admin JSON key)
-# - CRON_SECRET (A random password for API security)
-```
+### ☁️ 3. Backend & Notifications
+- Uses **Vercel Functions** for the push engine.
+- Deploy via `npm run deploy` from the root.
+- Set `FIREBASE_SERVICE_ACCOUNT` and `CRON_SECRET` in Vercel environment variables.
 
 ---
 *Built with ❤️ to make studying just a little bit easier.* 
