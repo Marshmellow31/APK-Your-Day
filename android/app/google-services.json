@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "224841353755-rdvamvesmfjjv6qe4h0ne298i7f8d260.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.yourday.app",
+            "certificate_hash": "9f3ff15481b069a1c4f2dda3744b7f6e11653335"
+          }
+        },
+        {
           "client_id": "224841353755-fg22jam79m743umabgbgvc00uujbe7ol.apps.googleusercontent.com",
           "client_type": 3
         }

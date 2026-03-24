@@ -58,6 +58,18 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
+}
+
+androidComponents {
+    beforeVariants { variantBuilder ->
+        variantBuilder.enableUnitTest = true
+    }
 }
 
 dependencies {
@@ -121,4 +133,11 @@ dependencies {
 
     // Permissions
     implementation(libs.accompanist.permissions)
+
+    // Testing
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
 }

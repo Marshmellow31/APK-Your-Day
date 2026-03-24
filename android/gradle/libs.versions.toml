@@ -12,13 +12,16 @@ room = "2.6.1"
 navigationCompose = "2.8.5"
 workManager = "2.10.0"
 coroutines = "1.9.0"
-firebaseBom = "33.7.0"
-googleServices = "4.4.2"
+firebaseBom = "34.11.0"
+googleServices = "4.4.4"
 coil = "2.7.0"
 splashscreen = "1.0.1"
 datastore = "1.1.1"
 gson = "2.11.0"
 accompanistPermissions = "0.36.0"
+junit = "4.13.2"
+androidxJunit = "1.2.1"
+espressoCore = "3.6.1"
 
 [libraries]
 # Android Core
@@ -37,6 +40,7 @@ androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 
@@ -71,7 +75,7 @@ firebase-messaging-ktx = { group = "com.google.firebase", name = "firebase-messa
 firebase-analytics-ktx = { group = "com.google.firebase", name = "firebase-analytics-ktx" }
 firebase-appcheck-debug = { group = "com.google.firebase", name = "firebase-appcheck-debug" }
 firebase-appcheck-ktx = { group = "com.google.firebase", name = "firebase-appcheck-ktx" }
-play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version = "21.2.0" }
+play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version = "21.3.0" }
 
 # Coil (image loading)
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
@@ -81,6 +85,11 @@ gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 
 # Accompanist
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanistPermissions" }
+
+# Testing
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxJunit" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
